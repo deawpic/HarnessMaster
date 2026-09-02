@@ -143,7 +143,58 @@ class MockToolRegistry:
         raise ValueError(f"Tool {tool_name} not found in harness mock registry")
 ```
 
-### Step 4: Verification & Evaluator Implementation
+### Step 4: Add Fault Injection & Chaos Testing Middleware
+*(Incorporating `agent-harness-fault-injection`)*
+```python
+import random, time
+
+class FaultInjectionMiddleware:
+    """Injects synthetic latency, 429 rate limits, and schema mutations to stress test agent resilience."""
+    def __init__(self, failure_rate: float = 0.0, max_latency_sec: float = 0.0, inject_429: bool = False):
+        self.failure_rate = failure_rate
+        self.max_latency_sec = max_latency_sec
+        self.inject_429 = inject_429
+
+    def wrap_tool(self, tool_fn):
+        def wrapped(*args, **kwargs):
+            if self.max_latency_sec > 0:
+                time.sleep(random.uniform(0.1, self.max_latency_sec))
+            if self.inject_429 and random.random() < 0.2:
+                raise RuntimeError("HTTP 429: Rate limit exceeded. Backoff required.")
+            if random.random() < self.failure_rate:
+                raise RuntimeError("FaultInjection: Synthetic downstream timeout / tool failure.")
+            return tool_fn(*args, **kwargs)
+        return wrapped
+```
+
+### Step 5: Implement FinOps Cost & Step Circuit Breaker
+*(Incorporating `runaway-guard` & `loop-library`)*
+```python
+class RunawayBudgetGuard:
+    """Hard-stops agent execution if dollar budget, token limits, or step count exceed caps."""
+    def __init__(self, max_cost_usd: float = 0.50, max_tokens: int = 50_000, max_steps: int = 15):
+        self.max_cost_usd = max_cost_usd
+        self.max_tokens = max_tokens
+        self.max_steps = max_steps
+        self.current_tokens = 0
+        self.current_cost_usd = 0.0
+        self.current_step = 0
+
+    def record_step(self, prompt_tokens: int, completion_tokens: int, cost_usd: float):
+        self.current_step += 1
+        self.current_tokens += (prompt_tokens + completion_tokens)
+        self.current_cost_usd += cost_usd
+
+        if self.current_cost_usd >= self.max_cost_usd:
+            raise RuntimeError(f"FinOps Circuit Breaker: Dollar cap (${self.max_cost_usd:.2f}) exceeded!")
+        if self.current_tokens >= self.max_tokens:
+            raise RuntimeError(f"Circuit Breaker: Token limit ({self.max_tokens}) exceeded!")
+        if self.current_step >= self.max_steps:
+            raise RuntimeError(f"Stop Rule: Max iterations ({self.max_steps}) reached without resolution.")
+```
+
+### Step 6: Verification & Evaluator Implementation
+*(Incorporating `audit-agent-run-evidence` & `test-guard`)*
 ```python
 class TaskEvaluator:
     @staticmethod
@@ -166,10 +217,10 @@ When tasked with improving an existing harness written by a user or team, follow
 ### Phase A: Diagnostic Audit Checklist (Anti-Pattern Scan)
 Inspect existing code against common harness anti-patterns:
 1. 🚩 **Host Contamination**: Does the agent execute directly in the project directory without an ephemeral copy?
-2. 🚩 **Self-Evaluation Bias**: Does the test assert on the LLM's textual reply instead of exit codes / AST diffs?
+2. 🚩 **Self-Evaluation Bias**: Does the test assert on the LLM's textual reply instead of exit codes / AST diffs? *(Use `audit-agent-run-evidence`)*
 3. 🚩 **State Leakage Across Runs**: Are tool mocks or in-memory caches shared without resetting between test runs?
 4. 🚩 **Blind Trajectories**: Are step reasoning, tool inputs/outputs, and tokens lost or unlogged?
-5. 🚩 **Uncontrolled Spend/Timeouts**: Are there no maximum step guards, per-step timeouts, or budget circuit breakers?
+5. 🚩 **Uncontrolled Spend/Timeouts**: Are there no maximum step guards, per-step timeouts, or budget circuit breakers? *(Use `runaway-guard`)*
 6. 🚩 **Sequential Bottlenecks**: Does running 50 benchmark cases take hours due to synchronous single-thread execution?
 
 ### Phase B: Performance & Concurrency Optimization
@@ -195,15 +246,17 @@ class AsyncBenchmarkRunner:
 ```
 
 ### Phase C: Hardening & Guardrail Retrofitting
-- Add schema validators on tool arguments (Pydantic / Zod).
+- Add schema validators on tool arguments (`pydantic` / `zod`).
 - Wrap external tool calls in exponential backoff retry decorators with circuit breakers.
-- Implement an automated loop detector that halts execution if the agent repeats the exact same tool call 3+ times.
+- Implement automated loop detector & stop rules (`loop-library`).
+- Embed fault injection layer to test agent recovery under stress (`agent-harness-fault-injection`).
 
 ### Phase D: Harness Self-Testing & Regression Suite
 - Create deterministic **Mock Agent** fixtures (Simulated LLMs returning predefined trajectories) to test the harness itself:
   - Test: Does the harness correctly mark a failing trajectory as Failed?
-  - Test: Does the harness abort on infinite loops?
+  - Test: Does the harness abort on infinite loops and budget breaches?
   - Test: Does the harness clean up temp directories upon crashing?
+  - Test: Ensure test assertions are free of test smells (`test-guard`).
 
 ---
 
@@ -212,6 +265,7 @@ class AsyncBenchmarkRunner:
 - [ ] **Determinism**: Does the harness produce repeatable results given fixed model seeds and mock data?
 - [ ] **Isolation**: Are file system and network modifications strictly confined to the sandbox?
 - [ ] **Observability**: Does the harness output complete trajectory logs (transcripts) with timing and token usage?
-- [ ] **Independent Truth**: Is success evaluated via ground-truth assertions rather than model self-reporting?
-- [ ] **Fault Tolerance**: Does the harness gracefully handle agent timeouts, crashes, and OOMs without hanging the test suite?
+- [ ] **Independent Truth**: Is success evaluated via ground-truth assertions rather than model self-reporting (`audit-agent-run-evidence`)?
+- [ ] **Cost Control**: Are strict per-run and per-day budget caps enforced (`runaway-guard`)?
+- [ ] **Fault Resilience**: Does the harness gracefully handle agent timeouts, 429 rate limits, crashes, and OOMs (`agent-harness-fault-injection`)?
 - [ ] **High Performance**: Is parallel execution supported with proper rate-limit backoff and memory management?
