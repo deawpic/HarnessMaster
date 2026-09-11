@@ -46,7 +46,6 @@ HarnessMaster/
 ├── README.md                                # รายละเอียดภาพรวมของโปรเจกต์ (ไฟล์นี้)
 ├── AGENTS.md                                # กฎระเบียบและบทบาทของ Agent ระดับ Workspace
 └── .agents/
-    ├── AGENTS.md                            # Workspace rules mirror
     └── skills/                              # คลังทักษะเฉพาะทางสำหรับงาน Harness & Evaluation
         ├── agent-harness-builder/           # [Flagship] ออกแบบ, สร้าง, ตรวจสอบ และ Optimize Harness ครบวงจร
         ├── agent-harness-fault-injection/   # จำลอง Fault & Chaos (Sandbox crash, Tool timeout, 429, schema corrupt)

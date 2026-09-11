@@ -31,7 +31,6 @@ HarnessMaster/
 ├── README.md                                # Project overview & architectural guide
 ├── AGENTS.md                                # Project-level agent instructions & rules
 └── .agents/
-    ├── AGENTS.md                            # Workspace rules mirror
     └── skills/
         ├── agent-harness-builder/           # [Flagship] End-to-end harness architecture & audit optimizer
         ├── agent-harness-fault-injection/   # Chaos & fault injection (sandboxes, tools, timeouts, 429s)
