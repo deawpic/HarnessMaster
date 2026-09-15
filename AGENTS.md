@@ -62,11 +62,11 @@ HarnessMaster/
 
 | Workflow / Task | Primary Skills | Description |
 | :--- | :--- | :--- |
-| **Building a New Harness** | `agent-harness-builder`, `ai-agents-architect` | Architect sandboxes, tool registries, execution loops, and runners. |
+| **Building a New Harness** | `agent-harness-builder`, `ai-agents-architect` | **[MANDATORY]** Architect sandboxes, tool registries, execution loops, and runners adhering strictly to Production Harness Master Standards (Section 6 of `agent-harness-builder`). |
 | **Fault Injection & Chaos Testing** | `agent-harness-fault-injection`, `tool-use-guardian` | Inject deterministic tool/sandbox errors, latency, 429s, and corrupt payloads. |
 | **Evidence & Trajectory Verification** | `audit-agent-run-evidence`, `test-guard` | Judge claims against ground-truth logs, AST diffs, and witness artifacts (Iron Law). |
 | **FinOps Cost & Circuit Breakers** | `runaway-guard`, `loop-library` | Enforce $/run, $/day limits, prevent infinite retry loops and runaway spend. |
-| **Auditing & Optimizing Existing Harnesses** | `agent-harness-builder`, `systematic-debugging` | Scan existing harnesses for anti-patterns, fix state leaks, add parallelism and telemetry. |
+| **Auditing & Optimizing Existing Harnesses** | `agent-harness-builder`, `systematic-debugging` | **[MANDATORY]** Scan existing harnesses for anti-patterns, fix state leaks, add parallelism, telemetry, and upgrade to Production Standards. |
 | **Evaluating Agent Performance & Triage** | `agent-evaluation`, `agent-qa-result-triage`, `langfuse` | Run benchmarks, calculate Pass@k, classify failure buckets, and LLM-as-a-judge. |
 | **Developing Tools, CLI & MCP** | `mcp-builder`, `ai-native-cli`, `tool-use-guardian` | Build MCP servers, mock API fixtures, and AI-native CLI tools with JSON contracts. |
 | **Memory & Context Architecture** | `agent-memory-systems`, `context-window-management` | Design episodic/procedural memory, prevent context rot, manage sliding windows. |
@@ -94,3 +94,15 @@ HarnessMaster/
    - Large evaluation suites must support async/parallel batch execution with quota-aware rate limiting to maximize throughput while preventing 429 errors.
 7. **Test-First Implementation**:
    - Write unit tests and mocks for harness tools and evaluators before executing live LLM agents.
+8. **Mandatory Production Harness Standards (Synthesized from MedMate & thlawdeka)**:
+   - **กฎเหล็กบังคับใช้ (Mandatory Invariant)**: เมื่อผู้ใช้สั่งให้ **"สร้าง harness ใหม่"** หรือ **"ปรับปรุง harness ใดๆ"** เอเจนต์ **ต้องเปิดใช้งาน (Activate) และปฏิบัติตามทักษะ `agent-harness-builder` (โดยเฉพาะหัวข้อที่ 6: Production Harness Master Standards) เสมอโดยไม่มีข้อยกเว้น**:
+     - **Visual & Diagram Protocol**: ห้ามใช้ ASCII Text Diagrams / ASCII Art / ASCII Tables (`+----+`, `|---|`, `├──`, `└──`, `--->`) โดยเด็ดขาด ทั้งในคำตอบและการบันทึกไฟล์ บังคับใช้บล็อกโค้ด **Mermaid (` ```mermaid `)** สำหรับแผนภาพ และ **Markdown Table (`| ... |`)** สำหรับตารางข้อมูล; ห้ามใช้ `classDiagram`/`stateDiagram` กับภาษาไทย/Non-ASCII (ให้แปลงเป็น `flowchart TD/LR`), Node ID ต้องเป็น ASCII ล้วน และ Label ต้องครอบด้วย double quotes `["..."]` เสมอ (ควบคุมด้วย `references/mermaid_unicode_guardian.py`).
+     - **Clean Documentation & Export Protocol**: บันทึกรายงานส่งออกเป็น Markdown-Native (`.md`) UTF-8 ในโฟลเดอร์ `./output/` เสมอ; คงรูปสูตร $\LaTeX$ / KaTeX; และบังคับใช้ **Clean File Gate** (ห้ามบันทึกข้อความแนะนำการแปลง PDF ลงในไฟล์เด็ดขาด แต่ให้แสดงคำแนะนำโปรแกรมเสริม เช่น Obsidian, VS Code ในแชทเท่านั้น) (ควบคุมด้วย `references/document_exporter.py`).
+     - **Grounding Whitelist Oracle**: ห้ามสร้างหรือเดาเลขอ้างอิง (PMID, เลขฎีกา, มาตรา) ขึ้นมาเอง; ตรวจสอบผ่าน Verified Payload เสมอ หากไม่มีให้ตัดเลขทิ้งและอธิบายเฉพาะหลักการอย่างโปร่งใส.
+     - **Anti-Sycophancy & Objectivity Gate**: ไม่เออออตามความเข้าใจผิดของผู้ใช้; ห้ามการันตีผลลัพธ์ 100% ในประเด็นที่ต้องใช้ดุลพินิจ.
+     - **Emergency & Red Flag Interceptor**: ดักจับสัญญาณวิกฤต (1669, ER, อายัดฉุกเฉิน, ขาดอายุความ, rm -rf, leak) และแจ้งเตือนทันทีโดยไม่ต้องรอลูปประมวลผล RAG หรือคำตอบยาว.
+     - **Tier-0 Dual-Layer Caching**: ติดตั้ง L1 In-Memory LRU (<0.2ms) + L2 SQLite WAL with zlib compression (<2.0ms) พร้อมระบบสร้างแคชอัตโนมัติในการรันครั้งแรก (First-run auto-init), Exponential Backoff with Jitter บน 429, และจำกัดการทดสอบ Latency Probe ไม่เกิน 3 คำขอ (ควบคุมด้วย `references/dual_layer_cache.py`).
+     - **Adaptive 3-Tier Persona Routing**: แบ่งระดับการตอบเป็น Tier 1 (ผู้เชี่ยวชาญ/IRAC), Tier 2 (นักศึกษา/SOAP Note), Tier 3 (คนทั่วไป/ข้อควรระวัง/คำเตือนทางกฎหมายหรือการแพทย์) พร้อมถามความต้องการสืบค้นเพิ่มเติมเชิงลึก (Proactive Evidence-on-Demand).
+     - **Domain Semantic Adaptation & Scale Profiles**: ปรับนิยามของ Red Flag, Oracle, และ 3-Tier ตามบริบทโดเมนอัตโนมัติ (การแพทย์, กฎหมาย, ซอฟต์แวร์/DevOps, การเงิน/FinOps ตาม Section 6.8 ของ `agent-harness-builder`) พร้อมเลือกระดับความหนาของสถาปัตยกรรม (Profile Micro สำหรับสคริปต์สั้น vs Profile Enterprise สำหรับ Multi-Agent/RAG ตาม Section 6.9) โดยไม่ลดทอนกฎเหล็กด้านความปลอดภัยและเอกสาร.
+
+

@@ -2,8 +2,9 @@
 name: agent-harness-builder
 description: >-
   Master guide for designing, architecting, implementing, auditing, refactoring, and optimizing production-grade
-  Agent Harnesses. Covers execution sandboxing, benchmark evaluation runners, mock tool environments,
-  trajectory verification, and performance optimization for existing and new harnesses.
+  Agent Harnesses. Enforces Golden Production Standards synthesized from MedMate and thlawdeka: Strict Mermaid Unicode Guardian,
+  Clean Markdown-Native Export (Chat-Only PDF), Grounding Oracle, Anti-Sycophancy, Emergency/Red Flag Interceptors,
+  Tier-0 Dual-Layer Caching, and Adaptive 3-Tier Persona Routing. MUST BE ACTIVATED whenever creating or improving any harness.
 ---
 
 # Agent Harness Builder & Optimizer
@@ -16,27 +17,18 @@ The **Agent Harness** is the mission-critical foundation surrounding an AI Agent
 
 A production agent harness is composed of 6 modular layers:
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│                   1. Agent Testbed Runner                    │
-│      (Dataset Loader, Parallel Execution, Param Matrix)      │
-├──────────────────────────────────────────────────────────────┤
-│                2. Trajectory & Observability                 │
-│         (Step Traces, Token Counters, Latency, Replay)       │
-├──────────────────────────────────────────────────────────────┤
-│           3. Verification & Evaluation Engine                │
-│     (Deterministic State Diffs, Test Runners, LLM Judge)     │
-├──────────────────────────────────────────────────────────────┤
-│            4. Guardrails & Circuit Breakers                  │
-│        (Loop Detection, Budget Caps, Safety Interceptors)    │
-├──────────────────────────────────────────────────────────────┤
-│               5. Tool & Protocol Mocking Layer               │
-│        (MCP Proxies, Mock APIs, Fault Injection Engine)      │
-├──────────────────────────────────────────────────────────────┤
-│               6. Isolated Sandbox Environment                │
-│       (Docker / Subprocess / Temp Workspaces / Git State)    │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    Layer1["<b>1. Agent Testbed Runner</b><br/>Dataset Loader, Parallel Execution, Param Matrix"]
+    Layer2["<b>2. Trajectory & Observability</b><br/>Step Traces, Token Counters, Latency, Replay"]
+    Layer3["<b>3. Verification & Evaluation Engine</b><br/>Deterministic State Diffs, Test Runners, LLM Judge"]
+    Layer4["<b>4. Guardrails & Circuit Breakers</b><br/>Loop Detection, Budget Caps, Safety Interceptors"]
+    Layer5["<b>5. Tool & Protocol Mocking Layer</b><br/>MCP Proxies, Mock APIs, Fault Injection Engine"]
+    Layer6["<b>6. Isolated Sandbox Environment</b><br/>Docker, Subprocess, Temp Workspaces, Git State"]
+
+    Layer1 --> Layer2 --> Layer3 --> Layer4 --> Layer5 --> Layer6
 ```
+
 
 ---
 
@@ -269,3 +261,158 @@ class AsyncBenchmarkRunner:
 - [ ] **Cost Control**: Are strict per-run and per-day budget caps enforced (`runaway-guard`)?
 - [ ] **Fault Resilience**: Does the harness gracefully handle agent timeouts, 429 rate limits, crashes, and OOMs (`agent-harness-fault-injection`)?
 - [ ] **High Performance**: Is parallel execution supported with proper rate-limit backoff and memory management?
+- [ ] **Production Standards Adherence**: Does the harness strictly follow Section 6 (Mermaid Guardian, Clean Export, Grounding Oracle, Tier-0 Caching, 3-Tier Persona Routing)?
+
+---
+
+## 6. Production Harness Master Standards (Synthesized from MedMate & thlawdeka)
+
+> [!IMPORTANT]
+> **Mandatory Activation Mandate**: Whenever instructed to **build a new harness ("สร้าง harness ใหม่")** or **improve/refactor any harness ("ปรับปรุง harness ใดๆ")**, the agent **MUST** activate and strictly enforce this section. These rules are synthesized from battle-tested production implementations in `MedMate` and `thlawdeka`.
+
+```mermaid
+flowchart TD
+    subgraph MasterStandard["🏛️ Production Harness Master Standards (7 Golden Pillars)"]
+        direction TB
+        
+        P1["<b>1. Visual & Diagram Protocol</b><br/>- Strict ASCII Ban (+----+, |--|, ├──, └──, --->)<br/>- Mermaid Unicode Guardian (flowchart TD/LR only)<br/>- Node/Subgraph ID = ASCII only, Labels = [\"...\"]"]
+        
+        P2["<b>2. Documentation & Export Protocol</b><br/>- Native UTF-8 Markdown in ./output/<br/>- LaTeX / KaTeX math preservation<br/>- Clean File Gate (Never save PDF advice to files)<br/>- Chat-Only PDF/Print Guidance (Obsidian, VS Code, Typora)"]
+        
+        P3["<b>3. Grounding Oracle & Anti-Hallucination</b><br/>- Zero tolerance for fake citations/PMIDs/Deka/Statutes<br/>- Whitelist verification from verified cache payload<br/>- Transparent fallback without specific numbers"]
+        
+        P4["<b>4. Anti-Sycophancy & Objectivity Gate</b><br/>- Never echo or flatter user misunderstandings<br/>- Discretion Gate: Never guarantee 100% win/cure"]
+        
+        P5["<b>5. Emergency & Red Flag Interceptor</b><br/>- Instant escalation for critical risks (1669, ER, Injunction)<br/>- Bypass long RAG/analysis latency"]
+        
+        P6["<b>6. Tier-0 Dual-Layer Cache & Resilience</b><br/>- L1 LRU (<0.2ms) + L2 SQLite WAL with zlib (<2.0ms)<br/>- First-run auto-initialization gate<br/>- Exponential backoff with jitter on 429<br/>- Benchmark speed test cap (&le; 3 requests)"]
+        
+        P7["<b>7. Adaptive 3-Tier Persona Routing</b><br/>- Tier 1: Expert / Professional (Peer-to-peer, IRAC)<br/>- Tier 2: Academic / Student (Mentorship, SOAP)<br/>- Tier 3: Public / Client (Empathetic, layman, disclaimers)<br/>- Proactive Evidence-on-Demand at footer"]
+    end
+```
+
+### 6.1 Visual & Diagram Protocol (Strict ASCII Prohibition & Mermaid Unicode Guardian)
+- **Strict Prohibition of ASCII Art & Tables**:
+  - ❌ **Absolute Ban**: Never use ASCII border tables (`+----+----+`), ASCII tree branches (`├──`, `└──`), ASCII flowchart arrows (`[A] ---> [B]`), Unicode box-drawing characters (`┌─┬─┐`, `│`, `─`), or space-aligned plain text tables in chat responses or saved files.
+  - ✅ **Replacements**:
+    - Diagrams / Flowcharts / Timelines $\rightarrow$ **Mermaid Code Block (````mermaid ... ````)**
+    - Structured data / Metrics / Comparisons $\rightarrow$ **Markdown Table (`| ... |`)** according to GFM.
+- **Mermaid Unicode Guardian (Thai & Non-ASCII Crash Prevention)**:
+  1. **Forbidden Diagram Types**: `classDiagram`, `stateDiagram`, `stateDiagram-v2`, `erDiagram`, `gitGraph` crash the Mermaid lexer when Non-ASCII / Thai characters are present. **Must always convert to `flowchart TD` or `flowchart LR`**.
+  2. **ASCII Identifiers**: All Node IDs and Subgraph IDs must be ASCII alphanumeric only (e.g. `Node_1["นาย ก"]`, `subgraph Sub_1 ["แผนกฉุกเฉิน"]`). Never use Thai in node IDs (`นายก["นาย ก"]` ❌).
+  3. **Quoted Label Gate**: Every label containing Thai, parentheses `()`, brackets `[]`, colons `:`, slashes `/`, or HTML tags must be explicitly wrapped in double quotes: `ID["ข้อความ (พร้อมวงเล็บ)"]`.
+  4. **Line Breaks**: Use `<br/>` for line breaks inside labels; never insert raw newlines.
+  5. **Automated Linter/Healer**: Integrate `references/mermaid_unicode_guardian.py` into the harness to automatically audit and sanitize Mermaid code blocks before output.
+
+### 6.2 Documentation & Exporting Protocol (Markdown-Native & Clean Export Gate)
+- **Dedicated Output Directory**: Always write generated reports to `./output/<filename>.md` using **UTF-8 encoding (without BOM)**. Never clutter the project root or seed data directories.
+- **Markdown-Native as Single Source of Truth**:
+  - Abolish in-agent PDF, DOCX, and HTML conversions to prevent font corruption (Tofu boxes), tone-mark floating, broken Thai word-breaks, and OS discrepancies.
+  - Preserve mathematical and chemical formulas using standard $\LaTeX$ / KaTeX syntax (e.g. $[H^+]$, Winter's formula).
+- **Clean Saved Document vs Chat-Only PDF Guidance Gate**:
+  - **Saved Files (`./output/*.md`)**: Must be pure, official, and professional reports containing only content, Mermaid diagrams, and Markdown tables. **Never save PDF export guides or printer instructions into the exported file**.
+  - **Chat Responses**: When the user requests printing or PDF export, display the standardized **Advisory Callout** exclusively in the chat window recommending:
+    1. *Obsidian* (Export to PDF with 100% Thai + Mermaid + LaTeX support)
+    2. *VS Code* (Markdown PDF / Markdown Preview Enhanced)
+    3. *Typora* (File -> Export -> PDF)
+    4. *Web Browser* (Ctrl + P -> Save as PDF via Markdown Viewer extension)
+- **Subprocess Execution Safety**:
+  - Always use `sys.executable` (never hardcode `"python"` or `"python3"`).
+  - Write multi-line Python code to `tempfile.NamedTemporaryFile` before running (avoids escape-quote issues with inline `python -c "..."` across Windows/Linux).
+  - Implementation reference: `references/document_exporter.py`.
+
+### 6.3 Grounding Oracle & Anti-Hallucination Protocol
+- **Verified Citations Only**:
+  - Never fabricate or guess citation numbers (e.g. PubMed PMIDs, Supreme Court Deka numbers, specific statutory sub-sections).
+  - Citations are only permitted if verified against external MCP tool payloads or stored in the Grounding Oracle database (`get_all_verified_*()`).
+  - **Honest Fallback**: If an external service is unavailable or no verified citation exists, strip specific citation numbers and describe only the verified theoretical/statutory principle, appending a transparent note.
+
+### 6.4 Anti-Sycophancy & Objectivity Gate
+- **No Ungrounded Validation**: Never agree with or validate a user's misconceptions (e.g. attempting to file a criminal lawsuit for a simple loan breach, or treating severe chest pain as minor indigestion). Provide courteous, objective, and evidence-grounded corrections.
+- **Judicial / Clinical Discretion Gate**: Never guarantee 100% outcomes (e.g. "ชนะคดีแน่นอน 100%" or "หายขาดแน่นอน"). Frame results probabilistically based on evidence and conditions.
+
+### 6.5 Emergency & Red Flag Interceptor
+- Implement an **early-exit trigger** for life-threatening or rights-extinguishing emergencies (e.g. Acute Coronary Syndrome, Stroke FAST, Anaphylaxis $\rightarrow$ Emergency 1669 / ER immediately; imminently expiring statutes of limitation or illicit property transfers $\rightarrow$ urgent court injunction).
+- Display emergency alerts immediately without waiting for lengthy multi-step RAG or analysis loops.
+
+### 6.6 Tier-0 Dual-Layer Caching Architecture & Fault Resilience
+- **Dual-Layer Architecture**:
+  - **L1 In-Memory LRU**: `<0.2ms` latency for high-frequency queries using `collections.OrderedDict` with `threading.RLock()`.
+  - **L2 SQLite Compressed Disk Cache**: `<2.0ms` latency using SQLite in WAL mode with MMAP and `zlib` (Level 6) BLOB compression.
+- **First-Run Auto-Initialization Gate**: The cache module must automatically create missing directories, initialize tables, set WAL mode, and build indexes on the first execution without requiring manual DBA scripts.
+- **Token Pruning (FinOps)**: Strip unnecessary metadata from external MCP responses to save 50%–70% input tokens while preserving 100% domain facts.
+- **Fault Resilience**:
+  - Wrap external requests in Exponential Backoff with Jitter for HTTP 429 rate limits.
+  - Speed/Latency benchmark probe guard: **Never exceed 3 live external requests** during latency tests to avoid exhausting API quotas.
+  - Implementation reference: `references/dual_layer_cache.py`.
+
+### 6.7 Adaptive 3-Tier Persona Routing & Proactive Inquiry
+- **Tier 1 (Expert / Professional)**:
+  - Peer-to-peer style, concise, technical terminology, level of evidence, IRAC framework, differential diagnoses.
+- **Tier 2 (Academic / Student)**:
+  - Mentorship style, step-by-step mechanisms (pathophysiology, statutory intent), SOAP note structure.
+- **Tier 3 (Public / Client)**:
+  - Empathetic, simple language, no obscure abbreviations, immediate practical steps, mandatory legal/medical disclaimer at footer.
+- **Proactive Evidence-on-Demand**: In Tier 1 and Tier 2 modes, deliver a concise summary first, then conclude with an offer asking if the user wants an in-depth literature/precedent query (e.g. *"ต้องการให้สืบค้นงานวิจัย RCTs หรือบรรทัดฐานเพิ่มเติมหรือไม่"*).
+
+### 6.8 Domain Semantic Adaptation Matrix (Context-Aware Mapping)
+While the 7 Golden Pillars are invariant, their domain-specific semantics adapt dynamically depending on whether the target harness is Medical, Legal, Software/DevOps, Finance/FinOps, or General AI:
+
+| Component | 🩺 Medical (MedMate) | ⚖️ Legal (thlawdeka) | 💻 Software / DevOps / Coding | 📈 Finance / FinOps / Business |
+| :--- | :--- | :--- | :--- | :--- |
+| **🚨 Emergency / Red Flag** | Life-threatening symptoms (Chest pain, Stroke FAST, Anaphylaxis) $\rightarrow$ Call 1669 / ER immediately | Expiring statute of limitations, illicit asset transfer $\rightarrow$ Urgent injunction / freeze asset petition | Destructive commands (`rm -rf /`, `DROP DATABASE`), credential leaks, infinite recursion $\rightarrow$ Trip circuit breaker | Budget cap breach ($/run, $/day), suspicious transactions (AML/Fraud alert) $\rightarrow$ Account freeze / hard-stop |
+| **🏛️ Grounding Oracle** | PMID, DOI, ICD-10/11, LOINC | Deka Case number, Statute number, Act/Code citation | Git commit SHA, Package SemVer, RFC/API Spec, CVE ID | Tax invoice ID, Transaction hash, Revenue code, SEC filing |
+| **🩺 Tier 1 (Expert)** | Specialist Doctor (Clinical trials, DDI, Level of evidence) | Attorney / Judge (IRAC, precedent trends, burden of proof) | Staff / Principal Architect (Design patterns, Big-O, concurrency, fault isolation) | CFO / Quantitative Risk Lead (CapEx/OpEx, ROI, risk exposure) |
+| **📝 Tier 2 (Learner)** | Medical Student (SOAP Note, pathophysiology mechanism) | Law Student (Statutory intent, case structure, elements) | Mid/Junior Developer (Step-by-step logic, syntactic best practices, snippets) | Accountant / Junior Financial Analyst (Ledger breakdown, ratio analysis) |
+| **👥 Tier 3 (Client)** | Patient / Family (Layman terms, self-care, SaMD/Clinical disclaimer) | Client / Public (Straightforward advice, fees, risks, legal disclaimer) | End-User / Product Manager (Business impact, user guides, release summary) | Retail Investor / Consumer (Simple overview, financial risk disclaimer) |
+
+### 6.9 Harness Scale Profiles (Lightweight Micro vs Enterprise Production)
+To prevent architectural over-engineering while preserving all safety invariants, select the appropriate scale profile:
+
+1. **Profile Micro (Single Tools, CLI Wrappers, Quick Probes)**:
+   - **Optimizations**: Uses in-memory L1 LRU cache (no need for SQLite L2 setup), lightweight mock tool registry, and streamlined 3-case evaluator.
+   - **Preserved Invariants**: Strictly enforces Mermaid Unicode Guardian, strict ASCII ban, UTF-8 markdown export to `./output/`, and Clean File Gate (chat-only PDF advice).
+2. **Profile Enterprise (Complex Agents, RAG Pipelines, Multi-MCP Systems)**:
+   - **Full Engine**: Full L1 LRU + L2 SQLite WAL with zlib compression, complete Grounding Whitelist Oracle database, 10-case standard benchmark suite (`benchmark_cases.json`), Adversarial Synthetic LLM runner, and Active Ping health probes.
+
+---
+
+## 7. Standard Directory Blueprint for New Harnesses
+
+When creating a new domain harness, instantiate the following standard structure:
+
+```text
+<domain>_harness/
+├── README.md                      # Architecture, prerequisites, setup, and usage guide
+├── AGENTS.md                      # Agent rules, persona routing, safety gates, and export protocol
+├── Makefile                       # CI/CD shortcuts (make test, make audit, make stats)
+├── .env.example                   # Environment variable template
+│
+├── harness/                       # 🛡️ Core Engine & Middlewares
+│   ├── __init__.py
+│   ├── cache.py                   # Dual-Layer Cache (L1 LRU + L2 SQLite WAL + zlib)
+│   ├── verifier.py                # Grounding Oracle & Anti-Hallucination Verifier
+│   ├── document.py                # Markdown-Native Exporter & Format Auditor
+│   ├── mermaid_guardian.py        # Mermaid Unicode Linter & Auto-Healer
+│   ├── evaluator.py               # Deterministic Benchmark Evaluator & Rubrics Scorer
+│   ├── mock_llm.py                # Adversarial Synthetic LLM for offline testing
+│   └── benchmark_cases.json       # Ground Truth Domain Test Suite (Standard 10 Cases)
+│
+├── evals/                         # 🧪 Benchmark Evaluation Suites
+│   ├── eval_benchmarks.py         # Ground Truth scoring runner
+│   └── run_performance_bench.py   # Latency, Hit Ratio & Token saving runner
+│
+├── tests/                         # 🔬 Unit & Resilience Tests
+│   ├── test_cache_resilience.py   # L1/L2, WAL, Concurrency, Quota Purge
+│   ├── test_grounding_oracle.py   # Hallucination detection & citation verification
+│   ├── test_mermaid_guardian.py   # Mermaid syntax & Thai Unicode safety
+│   └── test_document_exporter.py  # Markdown export, ASCII rejection, clean document gate
+│
+├── scripts/                       # 🚀 Automation & DevOps Scripts
+│   ├── ping_mcp.py                # Active Ping health check for external MCP servers
+│   └── run_harness.sh             # Full pipeline automation runner
+│
+├── output/                        # 📤 Clean Markdown (.md) UTF-8 reports
+└── cache/                         # 🗄️ SQLite cache database (*.db)
+```
+
