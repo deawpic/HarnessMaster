@@ -35,11 +35,13 @@ sys.path.insert(0, str(REFS_DIR))
 try:
     from mermaid_unicode_guardian import MermaidUnicodeGuardian
     from document_exporter import detect_ascii_tables_or_diagrams, audit_document_formatting
+    from test_policy_guardian import audit_test_policy_compliance
 except ImportError as e:
     print(f"Warning: Could not import helper guardians from {REFS_DIR}: {e}")
     MermaidUnicodeGuardian = None
     detect_ascii_tables_or_diagrams = None
     audit_document_formatting = None
+    audit_test_policy_compliance = None
 
 
 def audit_harness_directory(harness_path: Path, auto_fix: bool = False) -> Dict[str, Any]:
@@ -73,8 +75,31 @@ def audit_harness_directory(harness_path: Path, auto_fix: bool = False) -> Dict[
         "has_cache_dir": cache_dir.exists()
     }
 
+    report["token_policy_check"] = {
+        "checked": False,
+        "passed": False,
+        "score": 0,
+        "found_rules": [],
+        "missing_rules": []
+    }
+
     if not agents_md.exists():
         report["compliance_score"] -= 15
+    elif audit_test_policy_compliance:
+        try:
+            agents_text = agents_md.read_text(encoding="utf-8")
+            t_audit = audit_test_policy_compliance(agents_text)
+            report["token_policy_check"] = {
+                "checked": True,
+                "passed": t_audit["passed"],
+                "score": t_audit["score"],
+                "found_rules": t_audit["found_rules"],
+                "missing_rules": t_audit["missing_rules"]
+            }
+            if not t_audit["passed"]:
+                report["compliance_score"] -= (100 - t_audit["score"]) // 10
+        except Exception:
+            pass
 
     # 2. Scan all Markdown files (.md)
     md_files = list(harness_path.glob("**/*.md"))
@@ -189,6 +214,10 @@ def print_cli_report(report: Dict[str, Any]) -> None:
     print(f"| มีไฟล์ README.md ประจำระบบ | {'✅ ผ่าน' if struct['has_readme_md'] else '❌ ขาด'} |")
     print(f"| มีโฟลเดอร์ ./output/ สำหรับบันทึกผล | {'✅ ผ่าน' if struct['has_output_dir'] else '⚠️ ไม่มี'} |")
     print(f"| มีโฟลเดอร์ ./cache/ สำหรับ Tier-0 Cache | {'✅ ผ่าน' if struct['has_cache_dir'] else '⚠️ ไม่มี'} |")
+    token_check = report.get("token_policy_check", {})
+    if token_check.get("checked"):
+        status_token = f"✅ ผ่าน (คะแนน {token_check['score']}%)" if token_check["passed"] else f"⚠️ ไม่สมบูรณ์ ({token_check['score']}%)"
+        print(f"| กฎประหยัด Token & Test Control | {status_token} |")
 
     print(f"\n📁 จำนวนไฟล์ Markdown ที่สแกน: {report['files_scanned']} ไฟล์")
 
@@ -200,7 +229,7 @@ def print_cli_report(report: Dict[str, Any]) -> None:
         len(report["encoding_errors"])
     )
 
-    if total_issues == 0:
+    if total_issues == 0 and token_check.get("passed", True):
         print("\n✨ ยินดีด้วย! ไม่พบข้อบกพร่องตามกฎเหล็ก Production Harness Standards 100%")
     else:
         print(f"\n⚠️  พบข้อบกพร่องที่ต้องแก้ไขทั้งหมด {total_issues} รายการ:")
@@ -228,6 +257,11 @@ def print_cli_report(report: Dict[str, Any]) -> None:
             print("\n❌ 4. ข้อผิดพลาด Encoding:")
             for v in report["encoding_errors"]:
                 print(f"   - [{v['file']}] {v['error']}")
+
+        if token_check.get("missing_rules"):
+            print("\n⚠️ 5. ข้อเสนอแนะนโยบายประหยัด Token (Unittest Policy):")
+            for missing in token_check["missing_rules"]:
+                print(f"   - ขาดระเบียบ: {missing}")
 
     if report["fixes_applied"]:
         print("\n🛠️ การแก้ไขอัตโนมัติ (--fix):")

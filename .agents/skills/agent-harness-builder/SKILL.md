@@ -4,7 +4,7 @@ description: >-
   Master guide for designing, architecting, implementing, auditing, refactoring, and optimizing production-grade
   Agent Harnesses. Enforces Golden Production Standards synthesized from MedMate and thlawdeka: Strict Mermaid Unicode Guardian,
   Clean Markdown-Native Export (Chat-Only PDF), Grounding Oracle, Anti-Sycophancy, Emergency/Red Flag Interceptors,
-  Tier-0 Dual-Layer Caching, and Adaptive 3-Tier Persona Routing. MUST BE ACTIVATED whenever creating or improving any harness.
+  Tier-0 Dual-Layer Caching, Adaptive 3-Tier Persona Routing, and Strict Token Optimization & Test Control (Zero-Test by Default). MUST BE ACTIVATED whenever creating or improving any harness.
 ---
 
 # Agent Harness Builder & Optimizer
@@ -259,9 +259,10 @@ class AsyncBenchmarkRunner:
 - [ ] **Observability**: Does the harness output complete trajectory logs (transcripts) with timing and token usage?
 - [ ] **Independent Truth**: Is success evaluated via ground-truth assertions rather than model self-reporting (`audit-agent-run-evidence`)?
 - [ ] **Cost Control**: Are strict per-run and per-day budget caps enforced (`runaway-guard`)?
+- [ ] **Token Optimization & Test Control**: Is the harness operating in Zero-Test Implementation-Only Mode by default with explicit opt-in triggers, log suppression (-q --tb=short), and max 2 auto-fix attempts?
 - [ ] **Fault Resilience**: Does the harness gracefully handle agent timeouts, 429 rate limits, crashes, and OOMs (`agent-harness-fault-injection`)?
 - [ ] **High Performance**: Is parallel execution supported with proper rate-limit backoff and memory management?
-- [ ] **Production Standards Adherence**: Does the harness strictly follow Section 6 (Mermaid Guardian, Clean Export, Grounding Oracle, Tier-0 Caching, 3-Tier Persona Routing)?
+- [ ] **Production Standards Adherence**: Does the harness strictly follow Section 6 (Mermaid Guardian, Clean Export, Grounding Oracle, Tier-0 Caching, 3-Tier Persona Routing, Strict Test Control)?
 
 ---
 
@@ -272,7 +273,7 @@ class AsyncBenchmarkRunner:
 
 ```mermaid
 flowchart TD
-    subgraph MasterStandard["🏛️ Production Harness Master Standards (7 Golden Pillars)"]
+    subgraph MasterStandard["🏛️ Production Harness Master Standards (8 Golden Pillars)"]
         direction TB
         
         P1["<b>1. Visual & Diagram Protocol</b><br/>- Strict ASCII Ban (+----+, |--|, ├──, └──, --->)<br/>- Mermaid Unicode Guardian (flowchart TD/LR only)<br/>- Node/Subgraph ID = ASCII only, Labels = [\"...\"]"]
@@ -288,6 +289,8 @@ flowchart TD
         P6["<b>6. Tier-0 Dual-Layer Cache & Resilience</b><br/>- L1 LRU (<0.2ms) + L2 SQLite WAL with zlib (<2.0ms)<br/>- First-run auto-initialization gate<br/>- Exponential backoff with jitter on 429<br/>- Benchmark speed test cap (&le; 3 requests)"]
         
         P7["<b>7. Adaptive 3-Tier Persona Routing</b><br/>- Tier 1: Expert / Professional (Peer-to-peer, IRAC)<br/>- Tier 2: Academic / Student (Mentorship, SOAP)<br/>- Tier 3: Public / Client (Empathetic, layman, disclaimers)<br/>- Proactive Evidence-on-Demand at footer"]
+        
+        P8["<b>8. Strict Token Optimization & Test Control</b><br/>- Strict Zero-Test by Default (Opt-In Only)<br/>- Traceback Log Suppression Flags (-q --tb=short)<br/>- Hard Auto-Fix Loop Limit (Max 2 Attempts)<br/>- Fast Static Linters (ruff, mypy, tsc)"]
     end
 ```
 
@@ -375,6 +378,60 @@ To prevent architectural over-engineering while preserving all safety invariants
 2. **Profile Enterprise (Complex Agents, RAG Pipelines, Multi-MCP Systems)**:
    - **Full Engine**: Full L1 LRU + L2 SQLite WAL with zlib compression, complete Grounding Whitelist Oracle database, 10-case standard benchmark suite (`benchmark_cases.json`), Adversarial Synthetic LLM runner, and Active Ping health probes.
 
+### 6.10 Strict Token Optimization & Test Control Protocol (Zero-Test & Log Suppression)
+
+> [!IMPORTANT]
+> **Token Conservation Invariant**: In agentic execution harnesses, uncontrolled unit test execution, full traceback log dumping, and open-ended auto-fix loops account for up to 80% of unnecessary token bloat and API expenses. This protocol enforces strict test execution gating and log suppression.
+
+```mermaid
+flowchart TD
+    Prompt["User Prompt Received"] --> CheckTrigger{"Contains Explicit Test Trigger?<br/>('write test', 'unit test', 'test this', 'run tests')"}
+    CheckTrigger -- "No (Default)" --> ModeImpl["<b>Implementation-Only Mode</b><br/>- Do NOT write or edit test files<br/>- Do NOT run test runners autonomously<br/>- Do NOT read test files into context<br/>- Run fast static checkers (ruff / mypy / tsc)"]
+    CheckTrigger -- "Yes (Opt-In)" --> ModeTest["<b>Testing Mode Activated</b><br/>- Target ONLY requested function/file<br/>- Suppress traceback logs (-q --tb=short)<br/>- Max 2 Auto-Fix Attempts Hard Cap"]
+    
+    ModeTest --> RunSuppressed["Execute with Log Suppression<br/>pytest -q --tb=short --maxfail=1"]
+    RunSuppressed --> ResultCheck{"Pass?"}
+    ResultCheck -- "Pass" --> Finish["Complete Task & Report"]
+    ResultCheck -- "Fail" --> LoopCount{"Attempt Count < 2?"}
+    LoopCount -- "Attempt 1" --> ApplyFix["Read concise failure & apply targeted fix"] --> RunSuppressed
+    LoopCount -- "Attempt 2 Failed" --> HardStop["<b>STOP IMMEDIATELY</b><br/>- Revert broken test changes<br/>- Report error signature concisely (< 5 lines)<br/>- Ask user for direction"]
+```
+
+#### 1. Default Behavior: Strict Zero-Test Policy (Opt-In Only)
+By default, the agent operates in **Implementation-Only Mode**. You MUST strictly follow these rules:
+- **DO NOT WRITE TESTS**: Do not create, update, mock, or touch any test files (`*.test.*`, `*.spec.*`, `tests/`, `__tests__/`).
+- **DO NOT EXECUTE TESTS**: Do not execute test runners (`pytest`, `vitest`, `jest`, `npm test`, `cargo test`, etc.) autonomously under any circumstances.
+- **DO NOT READ TEST CONTEXT**: Do not load or read existing test files into context unless a broken import in production code strictly breaks compilation.
+- **ONLY CODE & CONTRACT**: Focus 100% of reasoning and output on production code, signatures, and interfaces.
+
+#### 2. Exception Trigger (Explicit Opt-In)
+Only transition into **Testing Mode** if the user prompt explicitly uses trigger words such as:
+`"write test"`, `"unit test"`, `"test this"`, `"run tests"`, or `"generate test suite"`.
+
+#### 3. Guardrails When Testing Mode Is Activated
+When explicitly instructed to test, enforce these token-saving guardrails:
+- **A. Minimal Context & Scope**:
+  - Test ONLY the immediate function or module requested. Do not attempt full-suite test coverage.
+  - Generate tests based on the function interface/signatures. Do not read unrelated codebase files for mocks; infer or use standard minimal stubs.
+- **B. Execution & Log Suppression**:
+  - If running tests, target ONLY the single test file or function. Never run the full test suite.
+  - Always use minimal output flags to suppress traceback tokens:
+    - **Python**: `pytest <path> -q --tb=short --maxfail=1`
+    - **Node/TS**: `npx vitest run <path> --reporter=compact` or `npm test -- <path> --bail`
+    - **Go**: `go test -v -run <TestName> <pkg>`
+    - **Rust**: `cargo test <test_name> -- --nocapture` (stop on first failure)
+- **C. Strict Auto-Fix Loop Limit (Max 2 Attempts)**:
+  - You are strictly limited to a **maximum of 2 auto-fix attempts** if a test fails:
+    - **Iteration 1**: Read concise failure $\rightarrow$ apply targeted fix.
+    - **Iteration 2**: Re-run once. If it still fails, STOP IMMEDIATELY.
+    - Revert broken test changes, report the exact error signature concisely (under 5 lines), and ask the user for direction. NEVER loop beyond 2 attempts.
+
+#### 4. Lightweight Verification Alternative
+For baseline correctness without token bloat, prefer static type checkers and linters over unit tests:
+- Run fast syntax/type checks only (e.g., `tsc --noEmit`, `mypy --quick`, `ruff check`).
+- Stop once static analysis passes.
+- Enforcement module: `references/test_policy_guardian.py`.
+
 ---
 
 ## 7. Standard Directory Blueprint for New Harnesses
@@ -396,17 +453,19 @@ When creating a new domain harness, instantiate the following standard structure
 │   ├── mermaid_guardian.py        # Mermaid Unicode Linter & Auto-Healer
 │   ├── evaluator.py               # Deterministic Benchmark Evaluator & Rubrics Scorer
 │   ├── mock_llm.py                # Adversarial Synthetic LLM for offline testing
+│   ├── test_guardian.py           # Strict Token Optimization & Test Control Guardian
 │   └── benchmark_cases.json       # Ground Truth Domain Test Suite (Standard 10 Cases)
 │
 ├── evals/                         # 🧪 Benchmark Evaluation Suites
 │   ├── eval_benchmarks.py         # Ground Truth scoring runner
 │   └── run_performance_bench.py   # Latency, Hit Ratio & Token saving runner
 │
-├── tests/                         # 🔬 Unit & Resilience Tests
+├── tests/                         # 🔬 Unit & Resilience Tests (Opt-In only)
 │   ├── test_cache_resilience.py   # L1/L2, WAL, Concurrency, Quota Purge
 │   ├── test_grounding_oracle.py   # Hallucination detection & citation verification
 │   ├── test_mermaid_guardian.py   # Mermaid syntax & Thai Unicode safety
-│   └── test_document_exporter.py  # Markdown export, ASCII rejection, clean document gate
+│   ├── test_document_exporter.py  # Markdown export, ASCII rejection, clean document gate
+│   └── test_policy_guardian.py    # Zero-test policy, trigger opt-in, log suppression & 2-fix limit
 │
 ├── scripts/                       # 🚀 Automation & DevOps Scripts
 │   ├── ping_mcp.py                # Active Ping health check for external MCP servers

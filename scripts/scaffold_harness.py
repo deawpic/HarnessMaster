@@ -113,7 +113,8 @@ def scaffold_harness(
         ("document_exporter.py", "document.py"),
         ("dual_layer_cache.py", "cache.py"),
         ("grounding_oracle.py", "verifier.py"),
-        ("mock_llm.py", "mock_llm.py")
+        ("mock_llm.py", "mock_llm.py"),
+        ("test_policy_guardian.py", "test_guardian.py")
     ]
     for src_name, dst_name in ref_files:
         src = REFS_DIR / src_name
@@ -197,6 +198,17 @@ def scaffold_harness(
 ## 6. ระบบแคชและป้องกันข้อมูลหลอน (Tier-0 Cache & Grounding Oracle)
 - ตรวจสอบ L1 Memory LRU และ L2 SQLite WAL ก่อนเรียก API ภายนอกเสมอ
 - **ห้ามสร้างเลขอ้างอิงเองเด็ดขาด**: อ้างอิงเฉพาะรายการที่ผ่านการยืนยัน ({semantics['oracle_ids']}) หากไม่มี ให้ตัดเลขทิ้งและคงไว้เฉพาะหลักการ
+
+---
+
+## 7. กฎการควบคุมการทดสอบและประหยัดโทเค็น (Strict Token Optimization & Test Control)
+- **โหมดเริ่มต้น (Strict Zero-Test / Implementation-Only Mode)**: ห้ามเขียน ดัดแปลง รัน หรืออ่านไฟล์ Test (`*.test.*`, `tests/`, `__tests__/`) โดยเด็ดขาด มุ่งเน้น 100% ไปที่โค้ดจริง (Production Code) และการกำหนด Interface
+- **การเข้าสู่โหมดทดสอบ (Explicit Opt-In Only)**: จะเปลี่ยนเป็นโหมดทดสอบต่อเมื่อผู้ใช้ระบุ Trigger Words ชัดเจน เช่น `"write test"`, `"unit test"`, `"test this"`, `"run tests"`, `"generate test suite"`
+- **มาตรการประหยัด Token เมื่อเข้าสู่โหมดทดสอบ**:
+  - Scope เฉพาะฟังก์ชันหรือโมดูลที่ระบุเท่านั้น ห้ามรันหรือเขียนครอบคลุมทั้งระบบ
+  - บังคับใช้คำสั่งระงับ Traceback Logs เพื่อลด Token (`pytest <path> -q --tb=short --maxfail=1`, `npm test -- <path> --bail`)
+  - **จำกัด Auto-Fix Loop ไม่เกิน 2 ครั้งเด็ดขาด**: ครั้งที่ 1 แก้ตามจุดที่ผิด, ครั้งที่ 2 รันทดสอบซ้ำ หากยังไม่ผ่าน ให้หยุดทันที (Stop Immediately), คืนค่าโค้ดเทส และรายงานสรุปข้อผิดพลาดไม่เกิน 5 บรรทัด
+- **ทางเลือกการตรวจสอบแบบประหยัด**: แนะนำให้ใช้ Fast Static Linters หรือ Type Checkers (`ruff check`, `mypy --quick`, `tsc --noEmit`) แทนการรัน Unit Test
 """
     (dest_dir / "AGENTS.md").write_text(agents_content, encoding="utf-8")
 
@@ -204,19 +216,20 @@ def scaffold_harness(
     readme_content = f"""# 🛡️ {semantics['title']}
 **{semantics['role']}** (สร้างโดย HarnessMaster - Profile: {profile.title()})
 
-ระบบ Agent Execution Harness ที่ปฏิบัติตาม **Golden Production Standards**:
+ระบบ Agent Execution Harness ที่ปฏิบัติตาม **Golden Production Standards (8 เสาหลัก)**:
 1. **Mermaid Unicode Guardian**: แผนภาพคมชัด ปลอดภัย 100% ต่อภาษาไทย
 2. **Clean Markdown Export**: ส่งออกไฟล์ UTF-8 ลง `./output/` พร้อม Clean File Gate
 3. **Grounding Whitelist Oracle**: ระบบคัดกรองเลขอ้างอิง ป้องกันข้อมูลหลอน
 4. **Tier-0 Caching**: แคชความเร็วสูง L1 LRU + L2 SQLite WAL (zlib Level 6)
 5. **Adaptive 3-Tier Routing**: สลับโหมดคำตอบระหว่าง ผู้เชี่ยวชาญ / ผู้ศึกษา / บุคคลทั่วไป
+6. **Strict Token Optimization & Test Control**: ควบคุมการทดสอบ Zero-Test by default, ระงับ Log และจำกัด Auto-Fix ไม่เกิน 2 ครั้ง
 
 ---
 
 ## 🚀 วิธีการทดสอบและใช้งาน (Quick Start)
 
 ```bash
-# 1. รันการทดสอบ Unit Tests ทั้งหมด
+# 1. รันการทดสอบ Unit Tests (Minimal log output)
 make test
 
 # 2. ตรวจสอบความถูกต้องตามมาตรฐาน Harness Compliance
@@ -233,7 +246,7 @@ make bench
 .PHONY: test audit bench clean
 
 test:
-	python3 -m unittest discover -s tests -p "test_*.py" -v
+	python3 -m unittest discover -s tests -p "test_*.py" -b
 
 audit:
 	python3 {HARNESS_MASTER_ROOT}/scripts/audit_compliance.py .
@@ -259,6 +272,7 @@ from harness.mermaid_guardian import MermaidUnicodeGuardian, validate_mermaid
 from harness.document import audit_document_formatting
 from harness.verifier import GroundingOracle
 from harness.mock_llm import MockLLMRunner
+from harness.test_guardian import TestControlGuardian
 
 class TestHarnessCoreStandards(unittest.TestCase):
 
@@ -285,6 +299,18 @@ class TestHarnessCoreStandards(unittest.TestCase):
         res = runner.generate_golden_response("กรณีศึกษาทดสอบ")
         self.assertIn("### 1. บทสรุป", res)
         self.assertIn("```mermaid", res)
+
+    def test_token_saving_test_control(self):
+        guardian = TestControlGuardian()
+        self.assertFalse(guardian.is_testing_triggered("implement feature only"))
+        self.assertTrue(guardian.is_testing_triggered("please write test for this"))
+        self.assertIn("-q --tb=short", guardian.get_suppressed_command("python", "tests/foo.py"))
+        attempt1 = guardian.record_attempt()
+        attempt2 = guardian.record_attempt()
+        attempt3 = guardian.record_attempt()
+        self.assertTrue(attempt1["allowed"])
+        self.assertTrue(attempt2["allowed"])
+        self.assertTrue(attempt3["must_stop"])
 
 if __name__ == "__main__":
     unittest.main()

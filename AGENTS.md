@@ -71,7 +71,8 @@ HarnessMaster/
 | **Developing Tools, CLI & MCP** | `mcp-builder`, `ai-native-cli`, `tool-use-guardian` | Build MCP servers, mock API fixtures, and AI-native CLI tools with JSON contracts. |
 | **Memory & Context Architecture** | `agent-memory-systems`, `context-window-management` | Design episodic/procedural memory, prevent context rot, manage sliding windows. |
 | **Agent Tuning & Multi-Agent Swarms** | `agent-orchestration-improve-agent`, `bug-hunt-swarm`, `subagent-orchestrator` | Profile and tune agent trajectories; launch multi-agent root-cause swarms. |
-| **Harness Testing & Quality** | `test-driven-development`, `python-testing-patterns`, `test-guard` | Write deterministic unit/integration tests and eliminate flaky assertions. |
+| **Token Optimization & Test Control** | `runaway-guard`, `test-guard` | Enforce Zero-Test by default, opt-in testing triggers, minimal scope, log suppression, and max 2 auto-fix attempts. |
+| **Harness Testing & Quality** | `test-driven-development`, `python-testing-patterns`, `test-guard` | Write deterministic unit/integration tests and eliminate flaky assertions when explicitly requested. |
 | **Debugging Failures & Loops** | `systematic-debugging`, `bug-hunt-swarm`, `loop-library` | Isolate root causes of agent crashes, cyclic states, and unexpected stalls. |
 
 ---
@@ -92,8 +93,20 @@ HarnessMaster/
    - Every agent loop must enforce hard budget caps ($/run, $/day) and bounded termination conditions (`runaway-guard`, `loop-library`).
 6. **Performance & Concurrency**:
    - Large evaluation suites must support async/parallel batch execution with quota-aware rate limiting to maximize throughput while preventing 429 errors.
-7. **Test-First Implementation**:
-   - Write unit tests and mocks for harness tools and evaluators before executing live LLM agents.
+7. **Strict Token Optimization & Test Control (Zero-Test by Default)**:
+   - **Default Behavior: Strict Zero-Test Policy (Implementation-Only Mode)**:
+     - DO NOT write, update, mock, or touch any test files (`*.test.*`, `*.spec.*`, `tests/`, `__tests__/`).
+     - DO NOT execute test runners (`pytest`, `vitest`, `jest`, `npm test`, `cargo test`, etc.) autonomously under any circumstances.
+     - DO NOT read test context into the window unless a broken import in production code strictly breaks compilation.
+     - Focus 100% of reasoning and context window on production code, signatures, and interfaces.
+   - **Exception Trigger (Explicit Opt-In Only)**:
+     - Transition into Testing Mode ONLY if the user prompt explicitly contains trigger words: `"write test"`, `"unit test"`, `"test this"`, `"run tests"`, or `"generate test suite"`.
+   - **Guardrails When Testing Mode Is Activated**:
+     - *Minimal Context & Scope*: Test ONLY immediate functions/modules requested; do not attempt full-suite test coverage or read unrelated files for mocks.
+     - *Execution & Log Suppression*: Target ONLY the single test file or function. Always use minimal output flags to suppress traceback tokens (`pytest <path> -q --tb=short --maxfail=1`, `npx vitest run <path> --reporter=compact`, `npm test -- <path> --bail`, `go test -v -run <TestName> <pkg>`, `cargo test <test_name> -- --nocapture`).
+     - *Strict Auto-Fix Loop Limit (Max 2 Attempts)*: Maximum 2 auto-fix attempts if a test fails. Iteration 1: read concise failure $\rightarrow$ apply targeted fix. Iteration 2: re-run once. If still failing, STOP IMMEDIATELY, revert broken test changes, report exact error signature under 5 lines, and ask user for direction. NEVER loop beyond 2 attempts.
+   - **Lightweight Verification Alternative**:
+     - Prefer fast static type checkers and linters (`ruff check`, `mypy --quick`, `tsc --noEmit`) over unit tests. Stop once static analysis passes.
 8. **Mandatory Production Harness Standards (Synthesized from MedMate & thlawdeka)**:
    - **กฎเหล็กบังคับใช้ (Mandatory Invariant)**: เมื่อผู้ใช้สั่งให้ **"สร้าง harness ใหม่"** หรือ **"ปรับปรุง harness ใดๆ"** เอเจนต์ **ต้องเปิดใช้งาน (Activate) และปฏิบัติตามทักษะ `agent-harness-builder` (โดยเฉพาะหัวข้อที่ 6: Production Harness Master Standards) เสมอโดยไม่มีข้อยกเว้น**:
      - **Visual & Diagram Protocol**: ห้ามใช้ ASCII Text Diagrams / ASCII Art / ASCII Tables (`+----+`, `|---|`, `├──`, `└──`, `--->`) โดยเด็ดขาด ทั้งในคำตอบและการบันทึกไฟล์ บังคับใช้บล็อกโค้ด **Mermaid (` ```mermaid `)** สำหรับแผนภาพ และ **Markdown Table (`| ... |`)** สำหรับตารางข้อมูล; ห้ามใช้ `classDiagram`/`stateDiagram` กับภาษาไทย/Non-ASCII (ให้แปลงเป็น `flowchart TD/LR`), Node ID ต้องเป็น ASCII ล้วน และ Label ต้องครอบด้วย double quotes `["..."]` เสมอ (ควบคุมด้วย `references/mermaid_unicode_guardian.py`).
@@ -104,5 +117,6 @@ HarnessMaster/
      - **Tier-0 Dual-Layer Caching**: ติดตั้ง L1 In-Memory LRU (<0.2ms) + L2 SQLite WAL with zlib compression (<2.0ms) พร้อมระบบสร้างแคชอัตโนมัติในการรันครั้งแรก (First-run auto-init), Exponential Backoff with Jitter บน 429, และจำกัดการทดสอบ Latency Probe ไม่เกิน 3 คำขอ (ควบคุมด้วย `references/dual_layer_cache.py`).
      - **Adaptive 3-Tier Persona Routing**: แบ่งระดับการตอบเป็น Tier 1 (ผู้เชี่ยวชาญ/IRAC), Tier 2 (นักศึกษา/SOAP Note), Tier 3 (คนทั่วไป/ข้อควรระวัง/คำเตือนทางกฎหมายหรือการแพทย์) พร้อมถามความต้องการสืบค้นเพิ่มเติมเชิงลึก (Proactive Evidence-on-Demand).
      - **Domain Semantic Adaptation & Scale Profiles**: ปรับนิยามของ Red Flag, Oracle, และ 3-Tier ตามบริบทโดเมนอัตโนมัติ (การแพทย์, กฎหมาย, ซอฟต์แวร์/DevOps, การเงิน/FinOps ตาม Section 6.8 ของ `agent-harness-builder`) พร้อมเลือกระดับความหนาของสถาปัตยกรรม (Profile Micro สำหรับสคริปต์สั้น vs Profile Enterprise สำหรับ Multi-Agent/RAG ตาม Section 6.9) โดยไม่ลดทอนกฎเหล็กด้านความปลอดภัยและเอกสาร.
+     - **Strict Token Optimization & Test Control Protocol**: บังคับใช้นโยบายประหยัด Token สูงสุด โดยตั้งค่าเริ่มต้นเป็น Zero-Test Policy (Implementation-Only Mode ห้ามเขียน/รัน/อ่านไฟล์ Test โดยพลการ); อนุญาตให้เข้า Testing Mode เมื่อมี Explicit Trigger Words เท่านั้น; เมื่อรันการทดสอบต้องใช้คำสั่งระงับ Traceback Logs (`pytest <path> -q --tb=short --maxfail=1`), จำกัด Auto-Fix Loop ไม่เกิน 2 ครั้งเด็ดขาด (รายงานข้อผิดพลาดกระชับไม่เกิน 5 บรรทัด), และใช้ Fast Static Analysis / Linters (`ruff check`, `mypy`, `tsc --noEmit`) แทนการรัน Unit Test เต็มรูปแบบ (ควบคุมด้วย `references/test_policy_guardian.py`).
 
 

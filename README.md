@@ -124,8 +124,10 @@ HarnessMaster/
    - ทุก Execution Loop ต้องกำหนด Per-Run และ Per-Day Dollar Budget Cap และมี Stop Rules ที่ชัดเจน (`runaway-guard`, `loop-library`)
 6. **High Throughput & Concurrency**:
    - ระบบ Harness ต้องรองรับการประเมินผลแบบขนาน (Parallel Batch Execution) โดยไม่เกิด Race Conditions หรือ State Leakage
-7. **Test-First Implementation (TDD)**:
-   - เขียน Unit Test และ Mock สำหรับ Tool และ Evaluator ให้พร้อมก่อนส่งงานให้ Agent รันจริง พร้อมตรวจจับ Test Smells ด้วย `test-guard`
+7. **Strict Token Optimization & Test Control (Zero-Test by Default)**:
+   - บังคับใช้ **Implementation-Only Mode** เป็นค่าเริ่มต้น (ห้ามสร้าง แก้ไข รัน หรืออ่านไฟล์ Test โดยพลการ เพื่อป้องกัน Token รั่วไหล)
+   - เปลี่ยนเป็น Testing Mode ต่อเมื่อมี Trigger Words ที่ชัดเจนเท่านั้น (`write test`, `unit test`, `test this`, `run tests`, `generate test suite`)
+   - บังคับใช้คำสั่งระงับ Traceback Logs (`pytest -q --tb=short --maxfail=1`), จำกัด Auto-Fix Loop สูงสุดไม่เกิน 2 ครั้งเด็ดขาด, และแนะนำ Fast Static Linters (`ruff check`, `mypy --quick`, `tsc --noEmit`) แทนการรัน Unit Test เต็มรูปแบบ
 8. **Mandatory Production Harness Standards (Synthesized from MedMate & thlawdeka)**:
    - ทุกครั้งที่มีการ **สร้าง harness ใหม่** หรือ **ปรับปรุง harness เดิม**:
      - **ห้ามใช้ ASCII Diagrams/Tables เด็ดขาด**: ใช้บล็อก Mermaid (`flowchart TD/LR`) + Markdown Tables ตามมาตรฐาน GFM และคุมด้วย `MermaidUnicodeGuardian`
@@ -133,13 +135,14 @@ HarnessMaster/
      - **Grounding Whitelist Oracle**: คัดกรองเลขอ้างอิงจริง ป้องกันข้อมูลหลอน (Anti-Hallucination)
      - **Anti-Sycophancy Gate**: ยึดความถูกต้องเป็นกลาง ไม่เออออตามผู้ใช้ และไม่การันตีผลลัพธ์ 100%
      - **Emergency / Red Flag Gate**: ตัดลูปขึ้นเตือนวิกฤตทันที
-      - **Tier-0 Dual-Layer Cache**: ติดตั้ง L1 LRU + L2 SQLite WAL (zlib Level 6) พร้อม First-Run Auto-Init และ Backoff บน 429
-      - **Adaptive 3-Tier Routing**: สลับโหมดคำตอบระหว่าง ผู้เชี่ยวชาญ / นักศึกษา / คนทั่วไป พร้อม Proactive Evidence Inquiry
-    - *โมดูลอ้างอิงพร้อมใช้งาน*: ดูที่ `.agents/skills/agent-harness-builder/references/`
+     - **Tier-0 Dual-Layer Cache**: ติดตั้ง L1 LRU + L2 SQLite WAL (zlib Level 6) พร้อม First-Run Auto-Init และ Backoff บน 429
+     - **Adaptive 3-Tier Routing**: สลับโหมดคำตอบระหว่าง ผู้เชี่ยวชาญ / นักศึกษา / คนทั่วไป พร้อม Proactive Evidence Inquiry
+     - **Strict Token Optimization & Test Control Protocol**: นโยบาย Zero-Test by default, ระงับ Traceback Logs, เพดาน Auto-Fix Loop 2 ครั้ง และทางเลือก Fast Static Linters เพื่อลด Token Bloat ได้สูงสุด 80% (ควบคุมด้วย `references/test_policy_guardian.py`)
+   - *โมดูลอ้างอิงพร้อมใช้งาน*: ดูที่ `.agents/skills/agent-harness-builder/references/`
 
 ---
 
-## 📦 โมดูลอ้างอิงระดับ Production ทั้ง 6 ตัว (Production Reference Modules)
+## 📦 โมดูลอ้างอิงระดับ Production ทั้ง 7 ตัว (Production Reference Modules)
 
 ตั้งอยู่ในโฟลเดอร์ [`.agents/skills/agent-harness-builder/references/`](file:///.agents/skills/agent-harness-builder/references/) พร้อมให้ดึงไปติดตั้งใน Harness ทุกตัวทันที:
 
@@ -151,6 +154,7 @@ HarnessMaster/
 | 🏛️ **`grounding_oracle.py`** | สกัด Citation ตรวจสอบกับ Verified Whitelist Payload, ป้องกันข้อมูลหลอน, แบนการันตี 100% | ✅ ผ่าน 100% |
 | 🧪 **`mock_llm.py`** | จำลองการตอบของ Agent แบบออฟไลน์ (Golden Case & Adversarial Injected Defect) เพื่อรัน CI/CD โดยไม่ต้องเสียค่า API | ✅ ผ่าน 100% |
 | 🐝 **`swarm_testbed.py`** | ตรวจจับ Ping-Pong Infinite Loop, Deadlock, และควบคุมงบประมาณรวมของระบบ Multi-Agent Swarm | ✅ ผ่าน 100% |
+| 🔒 **`test_policy_guardian.py`** | ควบคุม Zero-Test by default, ตรวจสอบ Explicit Opt-In Triggers, ระงับ Traceback Logs, และจำกัด Auto-Fix Loop ไม่เกิน 2 ครั้ง | ✅ ผ่าน 100% |
 
 ---
 
